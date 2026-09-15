@@ -29,6 +29,7 @@
 #include "ShipInit.hpp"
 #include "src/port/Enhancements/Events/Hooks/Events.h"
 #include "UI/LighthouseModMenuWindow.h"
+#include "VitaTrophies.h"
 
 #ifdef __vita__
 #include <vitasdk.h>
@@ -268,6 +269,12 @@ void push_frame() {
         FrameInterpolation_StartRecord();
     }
     mainLoop();
+#if defined(__vita__) && defined(ENABLE_VITA_TROPHIES)
+    // Game progress belongs to the tick thread.  Poll it here after the game
+    // has advanced, then let VitaTrophies queue the actual NP trophy call to
+    // its dedicated worker thread.
+    VitaTrophies::Pump();
+#endif
     if (recordInterpolation) {
         FrameInterpolation_StopRecord();
     }
@@ -323,8 +330,13 @@ int SDL_main(int argc, char* argv[]) {
 #endif
 
     // Anchor relative paths to the executable instead of cwd
-    // when SHIP_HOME is not in use
+    // when SHIP_HOME is not in use. Vita keeps writable game data and both
+    // required O2R archives in ux0:data/lighthouse, not in the read-only
+    // installed application directory.
     std::error_code ec;
+#ifdef __vita__
+    std::filesystem::current_path("ux0:data/lighthouse", ec);
+#else
     const char* shipHome = std::getenv("SHIP_HOME");
     const char* appImage = std::getenv("APPIMAGE");
     if (shipHome != nullptr && shipHome[0] != '\0') {
@@ -339,6 +351,7 @@ int SDL_main(int argc, char* argv[]) {
             std::filesystem::current_path(base, ec);
         }
     }
+#endif
 
     GameEngine::Create(argc, argv);
     // Both threads are created during core1_init, so allowlist them first.

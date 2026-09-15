@@ -19,6 +19,12 @@ This is a port of Lighthouse (v.1.0.3 with some improvements from develop branch
 ## vitaGL flags
 HAVE_PTHREAD=1 NO_DEBUG=1 HAVE_GLSL_TEXTURE_SIZE=1 INDICES_SPEEDHACK=1
 
+Tested vitaGL revision: `1ffcb99e65d979722c37eedd7298e9487f8eedb1`
+
+The Vita build uses the pinned `lib/vitaGL` submodule directly. Its headers and
+library take precedence over the copies installed in `VITASDK`, so building
+Lighthouse does not modify or depend on the SDK-wide vitaGL installation.
+
 # Original Readme
 
 # Lighthouse
@@ -111,6 +117,12 @@ If you're interested in creating and/or packing your own custom asset `.o2r`/`.o
 
 ### Building
 If you want to manually compile Lighthouse, please consult the [building instructions](https://github.com/HarbourMasters/Lighthouse/blob/main/docs/BUILDING.md).
+
+### PlayStation Vita trophies
+
+The Vita package includes a 61-trophy pack based on RetroAchievements' Banjo-Kazooie set (60 gameplay trophies plus a custom platinum). The pack is initialized when Lighthouse starts, before the game core begins running, and existing save progress is reconciled while playing.
+
+Build the pack on its own with `python tools/build_vita_trophy_pack.py --out build-vita/TROPHY.TRP --livearea-icon livearea/icon0.png`, or build the VPK normally with `Makefile.vita`; it installs the pack at `sce_sys/trophy/BANJO0064_00/TROPHY.TRP`. A Vita using this unsigned homebrew trophy pack requires NoTrpDrm.
 
 ### Playtesting
 If you want to playtest a continuous integration build, you can find them at the links below. Keep in mind that these are for playtesting only, and you will likely encounter bugs and possibly crashes.

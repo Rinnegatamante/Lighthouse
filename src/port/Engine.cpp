@@ -158,6 +158,17 @@ GameEngine::GameEngine() {
     this->context->InitConsoleVariables(); // without this line the controldeck constructor failes in
     // ShipDeviceIndexMappingManager::UpdateControllerNamesFromConfig()
 
+#ifdef __vita__
+    // The Vita display is fixed at 960x544. Desktop defaults (640x480) leave
+    // the rendered viewport cropped, and a failed audio attempt can persist
+    // the null backend in the shared configuration forever.
+    this->context->GetConfig()->SetInt("Window.Width", 960);
+    this->context->GetConfig()->SetInt("Window.Height", 544);
+    this->context->GetConfig()->SetString("Window.AudioBackend", "sdl");
+    this->context->GetConsoleVariables()->SetInteger(CVAR_IMGUI_CONTROLLER_NAV, 1);
+    this->context->GetConfig()->Save();
+#endif
+
     assets_path = Ship::Context::LocateFileAcrossAppDirs("lighthouse.o2r");
     portArchiveVersionMatch = std::filesystem::exists(assets_path); // TODO: port archive versioning
 
@@ -1294,7 +1305,7 @@ long long sLastSubFrameNs = 0;
 long long sPassBudgetNs = 0;
 } // namespace
 
-void GameEngine::RunCommands(Gfx* Commands, const std::vector<robin_hood::unordered_map<Mtx*, MtxF>>& mtx_replacements,
+void GameEngine::RunCommands(Gfx* Commands, const std::vector<std::unordered_map<Mtx*, MtxF>>& mtx_replacements,
                              size_t frameCount) {
     auto wnd = std::dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetRawInstance()->GetWindow());
 
@@ -1439,7 +1450,7 @@ void GameEngine::ProcessGfxCommands(Gfx* commands) {
     // Persistent across frames so each map's bucket array survives.
     // Interpolate clears entries but keeps the buckets, saving thousands
     // of node allocations per tick at high refresh rates.
-    static std::vector<robin_hood::unordered_map<Mtx*, MtxF>> mtx_replacements;
+    static std::vector<std::unordered_map<Mtx*, MtxF>> mtx_replacements;
 
     const SubframePacing pacing = ComputeSubframePacing();
     const int subframesPerTick = pacing.subframes;

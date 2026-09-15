@@ -375,6 +375,7 @@ void warp_ttcEnterBlubbersShipSide(NodeProp *arg0, ActorMarker *arg1) {
 }
 
 void warp_ttcExitLighthouseTop(NodeProp *arg0, ActorMarker *arg1) {
+    CALL_EVENT(OnLighthouseTopExit);
     func_8031CC8C(arg0, 0x0708);
 }
 

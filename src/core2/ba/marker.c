@@ -753,6 +753,8 @@ void __baMarker_resolveCollision(Prop *other_prop){
                 coMusicPlayer_playMusic(COMUSIC_15_EXTRA_LIFE_COLLECTED, 0x7FFF);
                 timedFunc_set_1(1.5f, (GenFunction_1)progressDialog_showDialogMaskFour, FILEPROG_C_EXTRA_LIFE_TEXT);
                 fxSparkle_extraLife(&other_prop->actorProp.x);
+                CALL_EVENT(OnExtraLifeCollected, gsworld_getMap(), other_prop->actorProp.x,
+                           other_prop->actorProp.y, other_prop->actorProp.z);
                 item_inc(ITEM_16_LIFE);
                 marker_despawn(marker);
                 break;
@@ -818,6 +820,7 @@ void __baMarker_resolveCollision(Prop *other_prop){
                 if (!chtrainers_canUse(actor))
                     return;
 
+                CALL_EVENT(OnTurboTrainerUsed);
                 baflag_set(BA_FLAG_10_TOUCHING_TURBO_TRAINERS);
                 set_turbo_duration(chtrainers_getDuration(actor));
                 bs_checkInterrupt(BS_INTR_1A);

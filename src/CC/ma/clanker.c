@@ -116,6 +116,7 @@ void maClanker_setState(s32 next_state){
 }
 
 void maClanker_spawnJiggy(void) {
+    CALL_EVENT(OnClankerReleased);
     jiggy_spawn(JIGGY_17_CC_CLANKER_RAISED, maClankerJiggyPosition);
 }
 
@@ -372,6 +373,7 @@ void maClanker_update(void){
             if(maClanker.triggerMeetDialog && skeletalAnim_getAnimId(maClanker.skeletonAnim) != ASSET_C4_ANIM_CLANKER_BITE){
                 skeletalAnim_set(maClanker.skeletonAnim, ASSET_C4_ANIM_CLANKER_BITE, 1.0f, 10.0f);
                 if(!maClanker.hasMetPlayer){
+                    CALL_EVENT(OnClankerChallengeStart);
                     gcdialog_showDialog(VER_SELECT(ASSET_D2B_DIALOG_CLANKER_MEET, 0x9FE, 0, 0), 0xE, maClanker.position, NULL, NULL, NULL);
                     maClanker.hasMetPlayer = TRUE;
                 }

@@ -88,6 +88,7 @@ logs/
 CLAUDE.md
 /saves
 /build-arm64
+/build-vita
 x64
 /x64/Debug
 

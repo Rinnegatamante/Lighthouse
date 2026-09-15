@@ -466,6 +466,7 @@ void chMrVileMinigame_setState(Actor *this, s32 next_state) {
         timedFunc_set_1(4.0f, (GenFunction_1)chMrVileMinigame_vileWinsRound, (uintptr_t)this->marker);
     }
     if (next_state == 8) {
+        CALL_EVENT(OnVileVictory, local->mode);
         chMrVile_setStateTalkToPlayer(local->vile_marker);
         func_80324E38(0.0f, 3);
         timedFunc_set_2(1.0f, (GenFunction_2)coMusicPlayer_playMusic, COMUSIC_3B_MINIGAME_VICTORY, 28000);

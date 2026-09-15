@@ -75,11 +75,16 @@ void PortEnhancements_Register() {
     REGISTER_EVENT(OnWaterPyramidTimer);
     REGISTER_EVENT(OnVileHoleStateChange);
     REGISTER_EVENT(OnVileGameStateChange);
+    REGISTER_EVENT(OnVileVictory);
+    REGISTER_EVENT(OnTurboTrainerUsed);
+    REGISTER_EVENT(OnClankerChallengeStart);
+    REGISTER_EVENT(OnClankerReleased);
 
     // Register game events
     REGISTER_EVENT(OnGameFlagSet);
     REGISTER_EVENT(OnItemCountChanged);
     REGISTER_EVENT(OnCollectibleCollected);
+    REGISTER_EVENT(OnExtraLifeCollected);
     REGISTER_EVENT(OnAbilityLearned);
     REGISTER_EVENT(OnJiggySpawned);
     REGISTER_EVENT(OnHoneycombDropSpawn);
@@ -90,6 +95,8 @@ void PortEnhancements_Register() {
     REGISTER_EVENT(OnGameSave);
     REGISTER_EVENT(OnGameErase);
     REGISTER_EVENT(OnBottlesBonusComplete);
+    REGISTER_EVENT(OnSandcastleCheatEntered);
+    REGISTER_EVENT(OnLighthouseTopExit);
     REGISTER_EVENT(OnSaveFileLoad);
     REGISTER_EVENT(OnSaveFileSave);
     REGISTER_EVENT(OnSaveClear);

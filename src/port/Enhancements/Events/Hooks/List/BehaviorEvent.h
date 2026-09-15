@@ -39,3 +39,7 @@ DEFINE_EVENT(OnGeoCull, s32 type; s32 offset; const void* modelBin; const u8* ar
 // logic; followers have the originating code paths suppressed via VB_VILE_* behaviors.
 DEFINE_EVENT(OnVileHoleStateChange, ActorMarker* marker; f32 * position; s32 state; s32 pieceType;)
 DEFINE_EVENT(OnVileGameStateChange, s32 state;)
+DEFINE_EVENT(OnVileVictory, s32 mode;)
+DEFINE_EVENT(OnTurboTrainerUsed)
+DEFINE_EVENT(OnClankerChallengeStart)
+DEFINE_EVENT(OnClankerReleased)

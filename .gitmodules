@@ -2,3 +2,27 @@
 	path = libultraship
 	url = https://github.com/Kenix3/libultraship.git
 	branch = main
+[submodule "lib/libgfxd"]
+	path = lib/libgfxd
+	url = https://github.com/glankk/libgfxd.git
+[submodule "lib/imgui"]
+	path = lib/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "lib/thread-pool"]
+	path = lib/thread-pool
+	url = https://github.com/bshoshany/thread-pool.git
+[submodule "lib/nlohmann-json"]
+	path = lib/nlohmann-json
+	url = https://github.com/nlohmann/json.git
+[submodule "lib/prism"]
+	path = lib/prism
+	url = https://github.com/KiritoDv/prism-processor.git
+[submodule "lib/monocypher"]
+	path = lib/monocypher
+	url = https://github.com/LoupVaillant/Monocypher.git
+[submodule "lib/robin-hood"]
+	path = lib/robin-hood
+	url = https://github.com/martinus/robin-hood-hashing.git
+[submodule "lib/vitaGL"]
+	path = lib/vitaGL
+	url = https://github.com/Rinnegatamante/vitaGL.git

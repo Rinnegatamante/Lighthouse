@@ -80,10 +80,10 @@ struct FrameTree {
     std::vector<CameraProjRotData> projRots;
     std::vector<SpriteDrawData> sprites;
     std::vector<AnimVtxData> animVtxs;
-    robin_hood::unordered_map<uint64_t, uint32_t> sigToToMtx;
-    robin_hood::unordered_map<uint64_t, uint32_t> sigToSprite;
-    robin_hood::unordered_map<uint64_t, uint32_t> sigToAnimVtx;
-    robin_hood::unordered_map<uint64_t, uint32_t> sigToProjRot;
+    std::unordered_map<uint64_t, uint32_t> sigToToMtx;
+    std::unordered_map<uint64_t, uint32_t> sigToSprite;
+    std::unordered_map<uint64_t, uint32_t> sigToAnimVtx;
+    std::unordered_map<uint64_t, uint32_t> sigToProjRot;
     std::vector<ScopeFrame> scopeStack;
     float cameraPos[3] = { 0.0f, 0.0f, 0.0f };
     bool hasCameraPos = false;
@@ -173,7 +173,7 @@ bool gShouldInterpolate = true;
 int gNoInterpolateDepth = 0;
 int gCameraRelativeDepth = 0;
 
-robin_hood::unordered_map<const void*, uint64_t> gIdMap;
+std::unordered_map<const void*, uint64_t> gIdMap;
 uint64_t gNextId = 1;
 
 InterpolationCache gCache;
@@ -568,8 +568,8 @@ void BuildInterpolationCache() {
     const std::vector<ToMtxData>& prevToMtxs = gRenderPrev->toMtxs;
     const std::vector<SpriteDrawData>& currSprites = gRenderCurr->sprites;
     const std::vector<SpriteDrawData>& prevSprites = gRenderPrev->sprites;
-    const robin_hood::unordered_map<uint64_t, uint32_t>& prevSigMap = gRenderPrev->sigToToMtx;
-    const robin_hood::unordered_map<uint64_t, uint32_t>& prevSpriteMap = gRenderPrev->sigToSprite;
+    const std::unordered_map<uint64_t, uint32_t>& prevSigMap = gRenderPrev->sigToToMtx;
+    const std::unordered_map<uint64_t, uint32_t>& prevSpriteMap = gRenderPrev->sigToSprite;
 
     gCache.pairedToMtxs.reserve(currToMtxs.size());
     gCache.pairedSprites.reserve(currSprites.size());
@@ -661,7 +661,7 @@ void BuildInterpolationCache() {
     // model through itself, so measure the jump against the model's own size.
     const std::vector<AnimVtxData>& currAnimVtxs = gRenderCurr->animVtxs;
     const std::vector<AnimVtxData>& prevAnimVtxs = gRenderPrev->animVtxs;
-    const robin_hood::unordered_map<uint64_t, uint32_t>& prevAnimVtxMap = gRenderPrev->sigToAnimVtx;
+    const std::unordered_map<uint64_t, uint32_t>& prevAnimVtxMap = gRenderPrev->sigToAnimVtx;
     gCache.pairedAnimVtxs.reserve(currAnimVtxs.size());
     for (uint32_t i = 0; i < currAnimVtxs.size(); i++) {
         const AnimVtxData& c = currAnimVtxs[i];
@@ -712,7 +712,7 @@ void BuildInterpolationCache() {
 
 // Rebuilds the sprite modelview the same way sprite/render.c composes it, so
 // a replayed matrix can't drift from what the game would have written.
-void emitSprite(const SpriteDrawData& L, robin_hood::unordered_map<Mtx*, MtxF>& replacements) {
+void emitSprite(const SpriteDrawData& L, std::unordered_map<Mtx*, MtxF>& replacements) {
     if (L.dst == nullptr) {
         return;
     }
@@ -825,7 +825,7 @@ void FrameInterpolation_ApplyAnimVertices(float t) {
     }
 }
 
-void FrameInterpolation_Interpolate(float t, robin_hood::unordered_map<Mtx*, MtxF>& replacements) {
+void FrameInterpolation_Interpolate(float t, std::unordered_map<Mtx*, MtxF>& replacements) {
     replacements.clear();
 
     if (!gRenderShould) {

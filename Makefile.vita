@@ -1,6 +1,12 @@
 TARGET := Lighthouse
+PYTHON ?= py
 
-TITLE := BANJO0064
+TITLE := BANJ00064
+TROPHY_COMM_ID := BANJ00064_00
+TROPHY_PACK := build-vita/TROPHY.TRP
+VITA_DEPS_PREFIX := build-vita/deps
+VITAGL_LOCAL_DIR := lib/vitaGL
+VITAGL_LOCAL_LIB := $(VITAGL_LOCAL_DIR)/libvitaGL.a
 
 TORCH_INCLUDES := Torch/src Torch/src/utils Torch/lib Torch Torch/src/factories \
 	Torch/lib/n64graphics Torch/lib/binarytools
@@ -13,8 +19,9 @@ TORCH_SOURCES := Torch/src Torch/src/factories Torch/src/factories/bk64 Torch/li
 
 LUS_INCLUDES := libultraship/include libultraship/src libultraship/src/ship/utils/binarytools libultraship/src/resource/type \
 	libultraship/src/resource libultraship/src/window libultraship/src/window/gui libultraship/src/audio libultraship/src/graphic \
-	libultraship/src libultraship/imgui libultraship/imgui/backends libultraship/src/public/bridge libultraship/include/libultraship \
-	libultraship/src/resource/factory libultraship/imgui/backends libultraship/imgui
+	libultraship/src lib/imgui lib/imgui/backends libultraship/src/public/bridge libultraship/include/libultraship \
+	libultraship/src/resource/factory lib/imgui/backends lib/imgui lib/prism/src lib/prism/lib \
+	lib/monocypher/src lib/monocypher/src/optional
 
 LUS_SOURCES := libultraship/src/fast libultraship/src/fast/resource/type libultraship/src/fast/resource/factory libultraship/src/ship/resource/factory \
 	libultraship/src/fast/debug libultraship/src/fast/backends libultraship/src/ship libultraship/src/ship/audio libultraship/src/ship/resource/type \
@@ -25,8 +32,8 @@ LUS_SOURCES := libultraship/src/fast libultraship/src/fast/resource/type libultr
 	libultraship/src/ship/controller/physicaldevice libultraship/src/ship/debug libultraship/src/ship/resource libultraship/src/ship/resource/archive \
 	libultraship/src/ship/utils/binarytools libultraship/src/ship/window/gui libultraship/src/ship/window/gui/resource libultraship/src/libultraship/window/gui \
 	libultraship/src/libultraship/log libultraship/src/libultraship/libultra libultraship/src/libultraship/controller/controldeck libultraship/src/libultraship/bridge \
-	libultraship/src/libultraship/controller/controldevice/controller libultraship/src/libultraship/controller/controldevice/controller/mapping libultraship/imgui \
-	libultraship/src/ship/events
+	libultraship/src/libultraship/controller/controldevice/controller libultraship/src/libultraship/controller/controldevice/controller/mapping lib/imgui \
+	libultraship/src/ship/events lib/prism/src/prism lib/prism/src/prism/utils
 
 GAME_SOURCES := src/BGS src/BGS/ch src/boot src/CC src/CC/ch src/CC/ma src/CCW src/CCW/ch src/core1 src/core1/n_audio src/core2 src/core2/anim src/core2/ba \
 	src/core2/bs src/core2/ch src/core2/collision src/core2/dialog src/core2/font src/core2/frame src/core2/fx src/core2/gc src/core2/level src/core2/map \
@@ -44,13 +51,13 @@ GAME_SOURCES := src/BGS src/BGS/ch src/boot src/CC src/CC/ch src/CC/ma src/CCW s
 
 SOURCES := $(LUS_SOURCES) $(TORCH_SOURCES) $(GAME_SOURCES)
 
-INCLUDES := $(LUS_INCLUDES) $(TORCH_INCLUDES) lib/ultralib/include \
+INCLUDES := $(LUS_INCLUDES) $(TORCH_INCLUDES) lib/ultralib/include lib/thread-pool/include lib/nlohmann-json/include lib/robin-hood/src/include \
 	actors levels include include/PR spdlog/include include/assets include/assets/actors \
 	include/assets/assets include/assets/bin include/assets/levels include/assets/textures \
 	src/audio src/buffers src/engine src/game src/goddard src/menu src/pc src/port src/port/Enhancements \
 	src/port/enhancements/game-interactor src/port/api textures src .
 
-LIBS = -lstorm -lgfxd -lzip -lbzip2 -lzstd -lz -lyaml-cpp -llzma -lssl -lcrypto -lstdc++ -lpng \
+LIBS = -L$(VITAGL_LOCAL_DIR) -L$(VITA_DEPS_PREFIX)/lib -lstorm -lgfxd -lzip -lbz2 -lzstd -lz -lyaml-cpp -llzma -lssl -lcrypto -lstdc++ -lpng16 \
 	-Wl,--whole-archive -lpthread -Wl,--no-whole-archive -lopenal \
 	-ltinyxml2 -lSDL2 -lvorbisfile -lvorbis -logg -lvitaGL -lvitashark -lSceShaccCgExt -ltaihen_stub -lmathneon -lSceAudioIn_stub \
 	-lSceIme_stub -lSceKernelDmacMgr_stub -lSceGxm_stub -lSceDisplay_stub -lSceTouch_stub -lSceHid_stub -lSceCtrl_stub -lSceNet_stub \
@@ -59,24 +66,22 @@ LIBS = -lstorm -lgfxd -lzip -lbzip2 -lzstd -lz -lyaml-cpp -llzma -lssl -lcrypto 
 
 FINAL_SOURCES := f
 
-CFILES := $(foreach dir,$(SOURCES), $(wildcard $(dir)/*.c)) libultraship/imgui/backends/imgui_impl_opengl3.c libultraship/imgui/backends/imgui_impl_sdl2.c
-CPPFILES := $(foreach dir,$(SOURCES), $(wildcard $(dir)/*.cpp))
+CFILES := $(foreach dir,$(SOURCES), $(wildcard $(dir)/*.c))
+CPPFILES := $(foreach dir,$(SOURCES), $(wildcard $(dir)/*.cpp)) \
+	lib/imgui/backends/imgui_impl_opengl3.cpp lib/imgui/backends/imgui_impl_sdl2.cpp
+
+CFILES += lib/prism/src/prism/utils/invoke.c lib/monocypher/src/monocypher.c \
+	lib/monocypher/src/optional/monocypher-ed25519.c
 
 CFILES := $(filter-out %.inc.c, $(CFILES))
 CFILES := $(filter-out bin/eu/%, $(CFILES))
 CFILES := $(filter-out src/game/main.c src/pc/dlmalloc.c, $(CFILES))
 
-OBJS := $(CFILES:.c=.o) $(CPPFILES:.cpp=.o) \
-	libultraship/imgui/backends/imgui_impl_opengl3.o \
-	libultraship/imgui/backends/imgui_impl_sdl2.o
+OBJS := $(CFILES:.c=.o) $(CPPFILES:.cpp=.o)
 
-OBJS_PREPARE := $(CFILES:.c=.ok) $(CPPFILES:.cpp=.ok) \
-	libultraship/imgui/backends/imgui_impl_opengl3.ok \
-	libultraship/imgui/backends/imgui_impl_sdl2.ok
+OBJS_PREPARE := $(CFILES:.c=.ok) $(CPPFILES:.cpp=.ok)
 
-OBJS_CLEAN := $(CFILES:.c=.oc) $(CPPFILES:.cpp=.oc) \
-	libultraship/imgui/backends/imgui_impl_opengl3.oc \
-	libultraship/imgui/backends/imgui_impl_sdl2.oc
+OBJS_CLEAN := $(CFILES:.c=.oc) $(CPPFILES:.cpp=.oc)
 
 FINAL_OBJS := $(foreach dir,$(FINAL_SOURCES), $(wildcard $(dir)/*.o))
 
@@ -101,11 +106,11 @@ CXX = $(PREFIX)-g++
 
 CFLAGS = -g -Wl,-q,--allow-multiple-definition,--wrap,pte_osSemaphorePost,--pic-veneer -O3 -ffast-math -fno-short-enums -fsigned-char \
 	$(foreach dir,$(INCLUDES),-I$(dir)) -fno-strict-aliasing -fno-optimize-sibling-calls \
-	-Wno-narrowing -DIMGUI_IMPL_OPENGL_ES2 -DSPDLOG_ACTIVE_LEVEL=0 \
-	-I$(VITASDK)/$(PREFIX)/include/SDL2 -DENABLE_OPENGL=1 -DNON_EQUIVALENT=1 \
+	-Wno-narrowing -std=gnu17 -DImTextureID=void\* -DIMGUI_DISABLE_DEFAULT_SHELL_FUNCTIONS -DIMGUI_IMPL_OPENGL_ES2 -DSPDLOG_ACTIVE_LEVEL=0 \
+	-I$(VITAGL_LOCAL_DIR)/source -I$(VITA_DEPS_PREFIX)/include -I$(VITA_DEPS_PREFIX)/include/SDL2 -I$(VITASDK)/$(PREFIX)/include/SDL2 -DENABLE_OPENGL=1 -DNON_EQUIVALENT=1 \
 	-D_LANGUAGE_C -D_USE_MATH_DEFINES -DCIMGUI_DEFINE_ENUMS_AND_STRUCTS -DNAUDIO_SUPPORT \
 	-DAVOID_UB=1 -DN_MICRO=1 -DF3DEX_GBI=1 -DGBI_FLOATS=1 -DNON_MATCHING=1 \
-	-DVERSION_US=1 -DENABLE_RUMBLE=1 -DIMGUI_DEFINE_MATH_OPERATORS -DBK64_SUPPORT \
+	-DVERSION_US=1 -DENABLE_RUMBLE=1 -DIMGUI_DEFINE_MATH_OPERATORS -DBK64_SUPPORT -DENABLE_VITA_TROPHIES \
 	-DCVAR_PREFIX_RANDOMIZER_ENHANCEMENT=\"$(CVAR_PREFIX_RANDOMIZER_ENHANCEMENT)\" \
 	-DCVAR_PREFIX_RANDOMIZER_SETTING=\"$(CVAR_PREFIX_RANDOMIZER_SETTING)\" \
 	-DCVAR_PREFIX_COSMETIC=\"$(CVAR_PREFIX_COSMETIC)\" \
@@ -151,14 +156,19 @@ ASFLAGS  = $(CFLAGS)
 
 all: $(TARGET).vpk
 
-$(TARGET).vpk: $(TARGET).velf
+$(TROPHY_PACK): tools/build_vita_trophy_pack.py vita/trophy/platinum.png $(wildcard vita/trophy/achievements/*.png) livearea/icon0.png
+	mkdir -p $(dir $@)
+	$(PYTHON) tools/build_vita_trophy_pack.py --out $@ --livearea-icon livearea/icon0.png
+
+$(TARGET).vpk: $(TARGET).velf $(TROPHY_PACK)
 	vita-make-fself -c -s $< eboot.bin
 	vita-mksfoex -s TITLE_ID=$(TITLE) -d ATTRIBUTE2=12 "$(TARGET)" param.sfo
 	vita-pack-vpk -s param.sfo -b eboot.bin $(TARGET).vpk \
 		-a livearea/icon0.png=sce_sys/icon0.png \
 		-a livearea/bg.png=sce_sys/livearea/contents/bg.png \
 		-a livearea/startup.png=sce_sys/livearea/contents/startup.png \
-		-a livearea/template.xml=sce_sys/livearea/contents/template.xml
+		-a livearea/template.xml=sce_sys/livearea/contents/template.xml \
+		-a $(TROPHY_PACK)=sce_sys/trophy/$(TROPHY_COMM_ID)/TROPHY.TRP
 
 prepare: f $(OBJS_PREPARE)
 
@@ -177,10 +187,13 @@ f:
 	$(PREFIX)-strip -g $<
 	vita-elf-create $< $@
 
-$(TARGET).elf: $(FINAL_OBJS)
+$(VITAGL_LOCAL_LIB):
+	$(MAKE) -C $(VITAGL_LOCAL_DIR) HAVE_PTHREAD=1 NO_DEBUG=1 HAVE_GLSL_TEXTURE_SIZE=1 INDICES_SPEEDHACK=1
+
+$(TARGET).elf: $(FINAL_OBJS) | $(VITAGL_LOCAL_LIB)
 	$(CXX) $(CXXFLAGS) $^ $(LIBS) -o $@
 
 objects: $(OBJS)
 
 clean: $(OBJS_CLEAN)
-	@rm -rf $(TARGET).velf $(TARGET).elf $(FINAL_OBJS) eboot.bin $(TARGET).vpk param.sfo
+	@rm -rf $(TARGET).velf $(TARGET).elf $(FINAL_OBJS) eboot.bin $(TARGET).vpk param.sfo build-vita

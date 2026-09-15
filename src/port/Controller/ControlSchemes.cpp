@@ -254,6 +254,13 @@ extern "C" void port_shapeControllerInput(void* contPad) {
     if (pad == nullptr) {
         return;
     }
+#ifdef __vita__
+    // Vita has no analog triggers. Use its physical L shoulder (reported by
+    // the existing mapping as N64 L) as Banjo-Kazooie's Z trigger.
+    if ((pad->button & BTN_L) != 0) {
+        pad->button = (pad->button & ~BTN_L) | BTN_Z;
+    }
+#endif
     // Demo modes feed their own recorded pad; don't reshape live input over it.
     if (IsDemoMode()) {
         return;

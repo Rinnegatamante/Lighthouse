@@ -423,6 +423,7 @@ static void __maCastle_checkFloorTileForRegularCheatCode(LetterFloorTile *letter
                     }
                     if (cheatcode_ptr->code[cheatcode_ptr->codeCharacterIdx] == 0)
                     {
+                        CALL_EVENT(OnSandcastleCheatEntered, (s32)(cheatcode_ptr - sCheatCodes));
                         coMusicPlayer_playMusic(COMUSIC_2D_PUZZLE_SOLVED_FANFARE, 32000);
 
                         if (is_in_ff_minigame)

@@ -16,6 +16,7 @@ DEFINE_EVENT(OnGameFlagSet, int32_t flagSpace; int32_t index; int32_t value; int
 DEFINE_EVENT(OnItemCountChanged, int32_t item; int32_t count;)
 // kind = AnchorCollectibleSpace.
 DEFINE_EVENT(OnCollectibleCollected, int32_t kind; int32_t id;)
+DEFINE_EVENT(OnExtraLifeCollected, int32_t map; float x; float y; float z;)
 // move = ability_e; value = 1 learned, 0 cleared.
 DEFINE_EVENT(OnAbilityLearned, int32_t move; int32_t value;)
 DEFINE_EVENT(OnJiggySpawned, int32_t jiggyId; float x; float y; float z;)
@@ -23,6 +24,9 @@ DEFINE_EVENT(OnHoneycombDropSpawn, int32_t honeycombId; int32_t bundleId; float 
 DEFINE_EVENT(OnTimedJiggyExpired, int32_t jiggyId;)
 DEFINE_EVENT(OnPropInit, Prop* propPtr;)
 DEFINE_EVENT(OnBottlesBonusComplete, int32_t index;)
+// index is the zero-based entry in TTC's regular sandcastle cheat table.
+DEFINE_EVENT(OnSandcastleCheatEntered, int32_t index;)
+DEFINE_EVENT(OnLighthouseTopExit)
 DEFINE_EVENT(OnSaveFileLoad, int32_t fileNum; void* saveBuffer; int32_t result;)
 DEFINE_EVENT(OnSaveFileSave, void* saveBuffer; int32_t fileNum; int32_t * result;)
 // Identifies which warp_* dispatcher is firing OnWarpResolveDest. Keep values

@@ -458,6 +458,10 @@ void gameSelect_update(Actor *this){
                         chBottlesBonus_resetCompleted();
                         gameFile_load(gSelectedGameNum);
                         port_syncBottlesBonusIndex();
+#if defined(__vita__) && defined(ENABLE_VITA_TROPHIES)
+                        extern void VitaTrophies_RequestRegistration(void);
+                        VitaTrophies_RequestRegistration();
+#endif
                         CALL_EVENT(OnGameStart);
                         if(EventSystem_Should(VB_GAMESELECT_START_NEW_GAME, !gameFile_isNotEmpty(sp84), sp84)){
                             s32 skipIntro = 0;
