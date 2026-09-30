@@ -712,7 +712,7 @@ void BuildInterpolationCache() {
 
 // Rebuilds the sprite modelview the same way sprite/render.c composes it, so
 // a replayed matrix can't drift from what the game would have written.
-void emitSprite(const SpriteDrawData& L, robin_hood::unordered_map<Mtx*, MtxF>& replacements) {
+void emitSprite(const SpriteDrawData& L, std::unordered_map<Mtx*, MtxF>& replacements) {
     if (L.dst == nullptr) {
         return;
     }
@@ -825,7 +825,7 @@ void FrameInterpolation_ApplyAnimVertices(float t) {
     }
 }
 
-void FrameInterpolation_Interpolate(float t, robin_hood::unordered_map<Mtx*, MtxF>& replacements) {
+void FrameInterpolation_Interpolate(float t, std::unordered_map<Mtx*, MtxF>& replacements) {
     replacements.clear();
 
     if (!gRenderShould) {

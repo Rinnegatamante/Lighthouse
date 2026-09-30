@@ -265,13 +265,19 @@ struct MainMenuEntry {
     std::vector<std::string> sidebarOrder = {};
 };
 
-static const std::unordered_map<Ship::AudioBackend, const char*> audioBackendsMap = {
-    { Ship::AudioBackend::WASAPI, "Windows Audio Session API" },
-    { Ship::AudioBackend::COREAUDIO, "Core Audio" },
-    { Ship::AudioBackend::SDL, "SDL" },
-	{ Ship::AudioBackend::OAL, "OpenAL" },
-    { Ship::AudioBackend::NUL, "Null" },
-};
+static const std::unordered_map<Ship::AudioBackend, const char*> audioBackendsMap =
+    []<typename Backend = Ship::AudioBackend>() {
+        std::unordered_map<Backend, const char*> backends = {
+            { Backend::WASAPI, "Windows Audio Session API" },
+            { Backend::COREAUDIO, "Core Audio" },
+            { Backend::SDL, "SDL" },
+            { Backend::NUL, "Null" },
+        };
+        if constexpr (requires { Backend::OAL; }) {
+            backends.emplace(Backend::OAL, "OpenAL");
+        }
+        return backends;
+    }();
 
 static const std::unordered_map<Fast::WindowBackend, const char*> windowBackendsMap = {
     { Fast::WindowBackend::FAST3D_DXGI_DX11, "DirectX" },
