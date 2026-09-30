@@ -1,4 +1,4 @@
 [submodule "libultraship"]
 	path = libultraship
-	url = https://github.com/Kenix3/libultraship.git
-	branch = main
+	url = https://github.com/rin-vitasdk-upgrade/libultraship.git
+	branch = vitasdk-upgrade

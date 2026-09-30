@@ -2,6 +2,10 @@ TARGET := Lighthouse
 
 TITLE := BANJO0064
 
+LUS_CONFIG_DIR := .build/vita-config
+LUS_CONFIG_HEADER := $(LUS_CONFIG_DIR)/ship/install_config.h
+BUILD_VERSION_SOURCE := $(LUS_CONFIG_DIR)/build.c
+
 TORCH_INCLUDES := Torch/src Torch/src/utils Torch/lib Torch Torch/src/factories \
 	Torch/lib/n64graphics Torch/lib/binarytools
 
@@ -44,13 +48,13 @@ GAME_SOURCES := src/BGS src/BGS/ch src/boot src/CC src/CC/ch src/CC/ma src/CCW s
 
 SOURCES := $(LUS_SOURCES) $(TORCH_SOURCES) $(GAME_SOURCES)
 
-INCLUDES := $(LUS_INCLUDES) $(TORCH_INCLUDES) lib/ultralib/include \
+INCLUDES := $(LUS_INCLUDES) $(TORCH_INCLUDES) $(LUS_CONFIG_DIR) lib/ultralib/include \
 	actors levels include include/PR spdlog/include include/assets include/assets/actors \
 	include/assets/assets include/assets/bin include/assets/levels include/assets/textures \
 	src/audio src/buffers src/engine src/game src/goddard src/menu src/pc src/port src/port/Enhancements \
 	src/port/enhancements/game-interactor src/port/api textures src .
 
-LIBS = -lstorm -lgfxd -lzip -lbzip2 -lzstd -lz -lyaml-cpp -llzma -lssl -lcrypto -lstdc++ -lpng \
+LIBS = -lprism -lmonocypher -lstorm -lzip -lbz2 -lzstd -lz -lyaml-cpp -llzma -lssl -lcrypto -lstdc++ -lpng \
 	-Wl,--whole-archive -lpthread -Wl,--no-whole-archive -lopenal \
 	-ltinyxml2 -lSDL2 -lvorbisfile -lvorbis -logg -lvitaGL -lvitashark -lSceShaccCgExt -ltaihen_stub -lmathneon -lSceAudioIn_stub \
 	-lSceIme_stub -lSceKernelDmacMgr_stub -lSceGxm_stub -lSceDisplay_stub -lSceTouch_stub -lSceHid_stub -lSceCtrl_stub -lSceNet_stub \
@@ -61,6 +65,7 @@ FINAL_SOURCES := f
 
 CFILES := $(foreach dir,$(SOURCES), $(wildcard $(dir)/*.c)) libultraship/imgui/backends/imgui_impl_opengl3.c libultraship/imgui/backends/imgui_impl_sdl2.c
 CPPFILES := $(foreach dir,$(SOURCES), $(wildcard $(dir)/*.cpp))
+CFILES := $(filter-out src/port/build.c,$(CFILES)) $(BUILD_VERSION_SOURCE)
 
 CFILES := $(filter-out %.inc.c, $(CFILES))
 CFILES := $(filter-out bin/eu/%, $(CFILES))
@@ -150,6 +155,19 @@ CXXFLAGS = $(CFLAGS) -fexceptions -std=gnu++20 -fpermissive
 ASFLAGS  = $(CFLAGS)
 
 all: $(TARGET).vpk
+
+$(LUS_CONFIG_HEADER): libultraship/src/ship/install_config.h.in cmake/vita-install-config.cmake
+	@mkdir -p $(@D)
+	cmake -DINPUT=$< -DOUTPUT=$@ -P cmake/vita-install-config.cmake
+
+$(BUILD_VERSION_SOURCE): src/port/build.c.in cmake/vita-build-version.cmake CMakeLists.txt FORCE
+	@mkdir -p $(@D)
+	cmake -DSOURCE_DIR=$(CURDIR) -DOUTPUT=$@ -P cmake/vita-build-version.cmake
+
+.PHONY: FORCE
+FORCE:
+
+$(OBJS): $(LUS_CONFIG_HEADER)
 
 $(TARGET).vpk: $(TARGET).velf
 	vita-make-fself -c -s $< eboot.bin

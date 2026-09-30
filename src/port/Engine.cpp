@@ -1294,7 +1294,7 @@ long long sLastSubFrameNs = 0;
 long long sPassBudgetNs = 0;
 } // namespace
 
-void GameEngine::RunCommands(Gfx* Commands, const std::vector<robin_hood::unordered_map<Mtx*, MtxF>>& mtx_replacements,
+void GameEngine::RunCommands(Gfx* Commands, const std::vector<std::unordered_map<Mtx*, MtxF>>& mtx_replacements,
                              size_t frameCount) {
     auto wnd = std::dynamic_pointer_cast<Fast::Fast3dWindow>(Ship::Context::GetRawInstance()->GetWindow());
 
@@ -1439,7 +1439,7 @@ void GameEngine::ProcessGfxCommands(Gfx* commands) {
     // Persistent across frames so each map's bucket array survives.
     // Interpolate clears entries but keeps the buckets, saving thousands
     // of node allocations per tick at high refresh rates.
-    static std::vector<robin_hood::unordered_map<Mtx*, MtxF>> mtx_replacements;
+    static std::vector<std::unordered_map<Mtx*, MtxF>> mtx_replacements;
 
     const SubframePacing pacing = ComputeSubframePacing();
     const int subframesPerTick = pacing.subframes;

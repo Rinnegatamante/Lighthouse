@@ -13,7 +13,7 @@
 
 // Caller owns and reuses `out` across sub-frames; we clear entries but the
 // bucket array persists.
-void FrameInterpolation_Interpolate(float t, robin_hood::unordered_map<Mtx*, MtxF>& out);
+void FrameInterpolation_Interpolate(float t, std::unordered_map<Mtx*, MtxF>& out);
 
 extern "C" {
 #endif
